@@ -7,8 +7,9 @@ Install MySQL and configure a cron job to take a backup every Sunday at 5 AM and
 
 ### 1. Install MySQL
 ```bash
-sudo apt-get update
-sudo apt-get install mysql-server -y
+sudo yum install mysql-server -y
+systemctl enable --now mysqld
+systemctl status mysqld
 ```
 
 ### 2. Secure MySQL Installation
@@ -26,7 +27,8 @@ Add the following content:
 ```bash
 #!/bin/bash
 date=$(date +"%Y-%m-%d_%H-%M-%S")
-mysqldump -u root -pYourPassword --all-databases > /backup/mysql_backup_$date.sql
+mkdir -p /backup
+mysqldump -u root -predhat --all-databases > /backup/mysql_backup_$date.sql
 ```
 Save the file and make it executable:
 ```bash

@@ -9,7 +9,7 @@ Install and configure Ansible Automation Platform on control nodes, create inven
 
 ### Install Ansible on Control Node (Ubuntu)
 ```bash
-sudo apt update && sudo apt install ansible -y
+sudo yum install ansible -y
 ```
 
 Verify the installation:

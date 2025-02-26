@@ -14,11 +14,11 @@ Create a shell script to ping every server in the `172.16.17.x` subnet (where `x
 ```
 ### 2. **Make the Script Executable**
  ```bash
-   sudo chmod +x ./ping-servers.sh
+   sudo chmod +x ./ping_servers.sh
 ```
 ### 3. **Run the script**
  ```bash
-    ./ping-servers.sh
+    ./ping_servers.sh
 ```
 ## Output Example:
 ```

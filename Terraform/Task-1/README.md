@@ -9,7 +9,11 @@
    - An RDS database.  
 3. Use a local provisioner to save the EC2 public IP address into a file named `ec2-ip.txt`.  
 ---
+
+## Architecture  
   ![image](./images/IMG-20250306-WA0008.jpg)
+
+---
 
 ## Steps  
 
@@ -49,7 +53,7 @@
  ```
 ### 3. Define Subnets
 
-#Create a Public Subnet
+- Create a Public Subnet
 
 ```
 resource "aws_subnet" "Public-1" {
@@ -65,7 +69,7 @@ resource "aws_subnet" "Public-1" {
 
   ![image](./images/public-subnet.jpg)
 
-#Create a Private SUbnet
+- Create a Private SUbnet
 
 ```
 resource "aws_subnet" "Private-1" {

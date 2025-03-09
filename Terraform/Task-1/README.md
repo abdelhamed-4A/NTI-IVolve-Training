@@ -8,8 +8,8 @@
    - An EC2 instance.  
    - An RDS database.  
 3. Use a local provisioner to save the EC2 public IP address into a file named `ec2-ip.txt`.  
-
 ---
+  ![image](./images/IMG-20250306-WA0008.jpg)
 
 ## Steps  
 

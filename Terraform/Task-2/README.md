@@ -1,243 +1,192 @@
+# Remote Backend and LifeCycle Rules
 
-# Multi-Tier Application Deployment with Terraform  
+1. Implement the provided architecture diagram using Terraform.  
+2. Store the Terraform state file in a remote backend.  
+3. Configure a `create_before_destroy` lifecycle rule for an EC2 instance and verify its behavior. 
+  ![image](./images/IMG-20250306-WA0007.jpg)
+## Features
 
-## Objective  
-1. Create a `IVolve` VPC manually in AWS and use a Data block in Terraform to retrieve the VPC ID.  
-2. Define and deploy a multi-tier architecture using Terraform that includes:  
-   - Two subnets (public and private).  
-   - An EC2 instance.  
-   - An RDS database.  
-3. Use a local provisioner to save the EC2 public IP address into a file named `ec2-ip.txt`.  
----
+- **VPC Architecture**:
+  - Custom VPC with public subnet
+  - Internet Gateway (IGW) for public access
+  - Route tables with public routing
+- **Compute Resources**:
+  - EC2 instance with Amazon Linux 2 AMI
+  - Auto-installed NGINX web server via user data
+  - SSH key pair authentication
+- **Security**:
+  - Security Group with restricted SSH/HTTP access
+  - Encrypted S3 state storage
+- **Monitoring & Alerting**:
+  - CloudWatch CPU utilization monitoring
+  - SNS email notifications for thresholds
+- **State Management**:
+  - Remote state storage in S3
+  - State locking
 
-## Architecture  
-  ![image](./images/IMG-20250306-WA0008.jpg)
+## Structure
 
----
+```
+
+terraform-project/
+├── backend.tf       # S3 backend & DynamoDB locking
+├── compute.tf       # EC2 instance configuration
+├── monitoring.tf    # CloudWatch alarms & SNS
+├── network.tf       # VPC, Subnet, IGW, Routing
+├── providers.tf     # AWS provider configuration
+├── security_groups.tf # Security Group rules
+├── storage.tf       # S3 bucket & DynamoDB resources
+├── variables.tf     # Input variables
+└── terraform.tfvars # Variable values
+
+```
 
 ## Steps  
 
 ### 1. Pre-requisites  
 
-1. **Manually Create the VPC**:  
-   - Use the AWS Management Console to create a VPC named `IVolve`.  
-   - Note the region and ensure you have access credentials configured for Terraform.  
+1. **Set Up Remote Backend**:  
+   - Define an S3 bucket for storing the Terraform state file.
+    ![image](./images/ivolve-s3-buchet.jpg)
 
-  ![image](./images/vpc.jpg)
+2. **Configure Remote Backend**:
+   - Add the following to ( backend.tf ):
+   ```
+terraform {
+  # State File shared between all Developer
+  backend "s3" {
+    bucket  = "ivolve-s3-buchet"
+    key     = "terraform.tfstate"
+    region  = "us-east-1"
+    encrypt = true
+    # Prevent Developers to modify at the same time ---> try this by opening 2-terminal
+    use_lockfile = true
+  }
+}
+   ```
 
-2. **Initialize Terraform**:  
-   - Create a directory for the Terraform project and navigate into it:
-     
-     ```bash
-     mkdir -p Terraform/Task-1 && cd Terraform/Task-1
-     ```  
+3. **Implement the Architecture**:
+   - Network Resources ( network.tf ):
+   ```
+resource "aws_vpc" "vpc" {
+  cidr_block = var.vpc_cidr_block
+  tags = {
+    Name = "VPC"
+  }
+}
 
-   - Initialize Terraform:  
-     ```bash
-     terraform init
-     ```  
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.vpc.id
+  tags = {
+    Name = "IGW"
+  }
+}
 
----
-
-### 2. Retrieve VPC ID
-
-1. **Define a Data Block in `main.tf`**:  
-   Add the following to fetch the VPC ID:  
-
- ```
-   data "aws_vpc" "by_tag" {
-     tags = {
-        Name = "IVolve-vpc"
-      }
-    }
- ```
-### 3. Define Subnets
-
-- Create a Public Subnet
-
-```
-resource "aws_subnet" "Public-1" {
-  vpc_id     = data.aws_vpc.by_tag.id
-  cidr_block = "10.0.1.0/24"
-  availability_zone = "us-east-1a"
+resource "aws_subnet" "public_subnet" {
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = var.public_subnet_cidr_block
+  availability_zone       = var.availability_zone
   map_public_ip_on_launch = true
+
   tags = {
-    Name = "Public-1"
+    Name = "Public Subnet"
   }
 }
-```
 
-  ![image](./images/public-subnet.jpg)
-
-- Create a Private SUbnet
-
-```
-resource "aws_subnet" "Private-1" {
-  vpc_id     = data.aws_vpc.by_tag.id
-  cidr_block = "10.0.2.0/24"
-  availability_zone = "us-east-1b"
-  tags = {
-    Name = "Private-1"
-  }
-}
-```
-  ![image](./images/private-subnet.jpg)
-
-### 4. Define the Network Configuration
-
-1. **Define an Internet Gateway in `main.tf`**:
-
-```
-  resource "aws_internet_gateway" "IVolve-igw" {
-  vpc_id = data.aws_vpc.by_tag.id
-  tags = {
-    Name = "IVolve-igw"
-    }
-  }
-```
-2. **Define a route table in `main.tf`**:
-
-```
-  resource "aws_route_table" "IVolve-rt" {
-  vpc_id = data.aws_vpc.by_tag.id
+resource "aws_route_table" "public_route_table" {
+  vpc_id = aws_vpc.vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.IVolve-igw.id
+    gateway_id = aws_internet_gateway.igw.id
   }
   tags = {
-    Name = "IVolve-rt"
+    Name = "Public Route Table"
   }
 }
-```
-  ![image](./images/route-table.jpg)
 
-3. **Associate the Public Subnet to the route table**:
+resource "aws_route_table_association" "public_subnet_association" {
+  subnet_id      = aws_subnet.public_subnet.id
+  route_table_id = aws_route_table.public_route_table.id
+}
+   ```
 
-```
-  resource "aws_route_table" "IVolve-rt" {
-  vpc_id = data.aws_vpc.by_tag.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.IVolve-igw.id
+4. **Compute Resources ( compute.tf )**:
+   ```
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm*"]
   }
+}
+
+resource "aws_instance" "ec2" {
+  ami                    = data.aws_ami.amazon_linux.id
+  instance_type          = var.aws_ec2_size
+  subnet_id              = aws_subnet.public_subnet.id
+  vpc_security_group_ids = [aws_security_group.ec2-sg.id]
+  key_name               = var.key_name
+  user_data              = <<-EOF
+                            #!/bin/bash
+                            sudo yum update -y
+                            sudo yum install -y nginx
+                            sudo systemctl start nginx
+                            sudo systemctl enable nginx
+                            EOF
+
   tags = {
-    Name = "IVolve-rt"
+    Name = "Web-Server"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
-```
-### 5. Define the Security Groups
+   ```
 
-1. **Define the Security Group for the EC2**:
-
-```
-resource "aws_security_group" "ec2-sg" {
-  name        = "ec2-sg"
-  description = "Allow inbound traffic"
-  vpc_id      = data.aws_vpc.by_tag.id
-  ingress {
-    description = "SSH"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags = {
-    Name = "ec2-sg"
-  }
+5. **Monitoring and Alerting ( monitoring.tf )**:
+   ```
+resource "aws_sns_topic" "cpu_alert_topic" {
+  name = "cpu_alert_topic"
 }
 
-```
-
-2. **Define the Security Group for ALB**:
-
-```
-resource "aws_security_group" "rds-sg" {
-  name        = "rds-sg"
-  description = "Allow inbound traffic"
-  vpc_id      = data.aws_vpc.by_tag.id
-
-  ingress {
-    description = "MySQL"
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    security_groups =  [aws_security_group.ec2-sg.id]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags = {
-    Name = "rds-sg"
-  }
-}
-```
----
-
-### 6. Define the EC2 Resource 
-
-```
-resource "aws_instance" "ec2-1" {
-  ami           = "ami-0e2c8caa4b6378d8c"
-  instance_type = "t2.micro"
-  subnet_id     = aws_subnet.Public-1.id
-  security_groups = [aws_security_group.ec2-sg.id]
-  tags = {
-    Name = "ec2-1"
-  }
-
-  provisioner "local-exec" {
-    command = "echo ${self.public_ip} > ec2-ip.txt"
-  }
-
-}
-```
-  ![image](./images/ec2.jpg)
-
-### 7. Define the database subnet group
-
-```
-resource "aws_db_subnet_group" "rds-subnet" {
-  name       = "rds-subnet"
-  subnet_ids = [aws_subnet.Private-1.id , aws_subnet.Public-1.id]
-  tags = {
-    Name = "rds-subnet"
-  }
-}
-```
-
-### 8. Create the database
-
-```
-resource "aws_db_instance" "rds_instance" {
-  allocated_storage    = 20                       # Storage size in GB
-  engine               = "mysql"                  # Replace with your desired engine (e.g., "postgres",
-  engine_version       = "8.0.39"                 # Specific version of the engine
-  instance_class       = "db.t3.micro"            # RDS instance type
-  username             = "admin"                  # Master username
-  password             = "Password123" # Master password
-  parameter_group_name = "default.mysql8.0"       # Replace with your engine's default parameter group
-  publicly_accessible  = true                     # Set false for private instances
-  skip_final_snapshot  = true                     # Avoid snapshot on deletion for testing
-  vpc_security_group_ids = [aws_security_group.rds-sg.id]
-  db_subnet_group_name   = aws_db_subnet_group.rds-subnet.name
+resource "aws_sns_topic_subscription" "email_subscription" {
+  topic_arn = aws_sns_topic.cpu_alert_topic.arn
+  protocol  = "email"
+  endpoint  = var.my_email
 }
 
-```
-  ![image](./images/database.jpg)
+resource "aws_cloudwatch_metric_alarm" "cpu_high_alarm" {
+  alarm_name                = "HighCPUUsage"
+  comparison_operator       = "GreaterThanThreshold"
+  evaluation_periods        = 2
+  metric_name               = "CPUUtilization"
+  namespace                 = "AWS/EC2"
+  period                    = 300
+  statistic                 = "Average"
+  threshold                 = var.threshold_cpu
+  alarm_description         = "This alarm triggers when CPU usage exceeds 70% for the instance."
+  alarm_actions             = [aws_sns_topic.cpu_alert_topic.arn]
+  insufficient_data_actions = []
+  ok_actions                = [aws_sns_topic.cpu_alert_topic.arn]
+
+  dimensions = {
+    InstanceId = aws_instance.ec2.id
+  }
+}
+   ```
+6. **Initialize and Apply Configuration**:
+  - Initialize Terraform:
+  bash```
+  terraform init
+  ```
+  - Review Execution Plan:
+  bash```
+  terraform plan
+  ```
+  - Apply Configuration:
+    bash```
+  terraform apply
+  ```

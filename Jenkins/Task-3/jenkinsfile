@@ -13,7 +13,7 @@ pipeline {
         // Stage 1: Clone the GitHub repository
         stage('Clone GitHub Repository') {
             steps {
-                git url: 'https://github.com/abdelhamed-4A/NTI-IVolve-Training/tree/main/Jenkins/Task-3', branch: 'main'
+                git url: 'https://github.com/abdelhamed-4A/NTI-IVolve-Training.git', branch: 'main', credentialsId: 'github-token'
             }
         }
 

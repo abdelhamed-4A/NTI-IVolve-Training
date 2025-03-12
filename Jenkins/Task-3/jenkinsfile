@@ -1,9 +1,83 @@
-FROM nginx:latest
+pipeline {
+    agent any
 
-WORKDIR /usr/share/nginx/html
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('DockerHub') 
+        DOCKER_IMAGE_NAME = "my-image" // Replace with your Docker Hub image name
+        DOCKER_IMAGE_TAG = "latest"
+        KUBE_DEPLOYMENT_FILE = "deployment.yaml" // Path to your Kubernetes deployment file
+        K8S_TOKEN = credentials('k8s-service-account-token')
+    }
 
-COPY ./static_website/ .
+    stages {
+        // Stage 1: Clone the GitHub repository
+        stage('Clone GitHub Repository') {
+            steps {
+                git url: 'https://github.com/abdelhamed-4A/NTI-IVolve-Training/tree/main/Jenkins/Task-3', branch: 'main'
+            }
+        }
 
-EXPOSE 80
+        // Stage 2: Build Docker image
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
+                }
+            }
+        }
 
-CMD ["nginx", "-g", "daemon off;"]
+        // Stage 3: Push Docker image to Docker Hub
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'DockerHub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
+                        sh "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin"
+                        sh "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    }
+                }
+            }
+        }
+
+        // Stage 4: Delete Docker image locally
+        stage('Delete Local Docker Image') {
+            steps {
+                script {
+                    sh "docker rmi ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                }
+            }
+        }
+
+        // Stage 5: Update Kubernetes deployment with the new image
+        stage('Update Kubernetes Deployment') {
+            steps {
+                script {
+                    sh """
+                        sed -i 's|image: .*|image: ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}|g' ${KUBE_DEPLOYMENT_FILE}
+                    """
+                }
+            }
+        }
+
+        // Stage 6: Deploy to Kubernetes (Minikube)
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    sh "kubectl apply -f ${KUBE_DEPLOYMENT_FILE}"
+                }
+            }
+        }
+    }
+
+    // Post-actions for the pipeline
+    post {
+        always {
+            echo 'Pipeline completed. Cleaning up...'
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}

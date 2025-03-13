@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('DockerHub') 
-        DOCKER_IMAGE_NAME = "my-image" // Replace with your Docker Hub image name
+        DOCKER_IMAGE_NAME = "abdelhamed4a/my-image" // Replace with your Docker Hub image name
         DOCKER_IMAGE_TAG = "latest"
-        KUBE_DEPLOYMENT_FILE = "deployment.yaml" // Path to your Kubernetes deployment file
+        KUBE_DEPLOYMENT_FILE = "Jenkins/Task-3/deployment.yaml" // Path to your Kubernetes deployment file
         K8S_TOKEN = credentials('k8s-service-account-token')
     }
 
@@ -62,7 +62,13 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    sh "kubectl apply -f ${KUBE_DEPLOYMENT_FILE}"
+                                sh """
+                kubectl config set-credentials jenkins-user --token=${K8S_TOKEN}
+                kubectl config set-cluster minikube --server=https://192.168.49.2:8443 --insecure-skip-tls-verify
+                kubectl config set-context jenkins-context --cluster=my-cluster --user=jenkins-user
+                kubectl config use-context jenkins-context
+                kubectl apply -f Jenkins/Task-3/deployment.yaml
+            """
                 }
             }
         }

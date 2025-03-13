@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: my-container
-        image: my-image:latest
+        image: abdelhamed4a/my-image:latest
         ports:
         - containerPort: 80

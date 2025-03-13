@@ -7,3 +7,4 @@ COPY ./static_website/ .
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
+

@@ -1,0 +1,13 @@
+// Jenkinsfile
+@Library('jenkins-shared-library') _
+
+dockerKubePipeline(
+    repositoryUrl: 'https://github.com/abdelhamed-4A/NTI-IVolve-Training.git',
+    branch: 'main',
+    gitCredentialsId: 'github-token',
+    dockerImageName: 'abdelhamed4a/my-image',
+    dockerImageTag: 'latest',
+    dockerHubCredentialsId: 'DockerHub',
+    kubeDeploymentFile: 'Jenkins/Task-3/deployment.yaml',
+    k8sTokenCredentialsId: 'k8s-service-account-token'
+)

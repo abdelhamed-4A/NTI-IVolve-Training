@@ -1,24 +1,26 @@
 # Jenkins Pipeline for Application Deployment
 
-## Objective
-Create a Jenkins pipeline that automates the following processes:
+## 🚀 Objective
+Automate application deployment using Jenkins by implementing the following steps:
 
-- Build a Docker image from a Dockerfile in the provided GitHub repository.
+- Build a Docker image from the GitHub repository.
 - Push the Docker image to Docker Hub.
-- Update the new image version in `deployment.yaml`.
+- Update the image version in `deployment.yaml`.
 - Deploy the application to a Kubernetes cluster.
-- Include post-action steps in the `Jenkinsfile`.
+- Implement post-action steps in the `Jenkinsfile`.
 
-## Prerequisites
+---
 
-### Tools and Accounts
-- **Jenkins**: Installed and configured.
-- **Docker Hub Account**: To push Docker images.
-- **Kubernetes Cluster**: A running cluster (e.g., Minikube, Docker Desktop, GKE, EKS, AKS).
-- **GitHub Repository**: Contains the application code, Dockerfile, and `deployment.yaml`.
+## ✅ Prerequisites
 
-### Jenkins Plugins
-Ensure the following plugins are installed in Jenkins:
+### 🛠 Required Tools & Accounts
+- **Jenkins** (Installed & Configured)
+- **Docker Hub Account**
+- **Kubernetes Cluster** (Minikube, Docker Desktop, GKE, EKS, AKS)
+- **GitHub Repository** (With Application Code, Dockerfile, and `deployment.yaml`)
+
+### 📌 Jenkins Plugins
+Ensure the following plugins are installed:
 - Pipeline
 - Docker Pipeline
 - Kubernetes CLI
@@ -29,17 +31,16 @@ Ensure the following plugins are installed in Jenkins:
 
 ---
 
-## Setup Instructions
+## 🏗 Setup Instructions
 
-### 1. Install and Configure Jenkins
+### 🔹 1. Install and Configure Jenkins
 
 #### 1.1 Update System Packages
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
 
-#### 1.2 Install Java
-Jenkins requires Java. Install it using:
+#### 1.2 Install Java (Required for Jenkins)
 ```bash
 sudo apt install openjdk-17-jdk -y
 ```
@@ -54,146 +55,138 @@ curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee /
 echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
 ```
 
-#### 1.5 Update Package List
+#### 1.5 Update Package List & Install Jenkins
 ```bash
 sudo apt update
-```
-
-#### 1.6 Install and Start Jenkins
-```bash
 sudo apt install jenkins -y
 sudo systemctl start jenkins
 sudo systemctl enable jenkins
 ```
 
-#### 1.7 Configure Jenkins
-Access the Jenkins web interface at `http://localhost/:8080`.
-
-Retrieve the admin password:
+#### 1.6 Retrieve Jenkins Admin Password
 ```bash
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
-Complete the setup wizard:
-- Install recommended plugins.
-- Create an admin account.
+Access Jenkins at `http://localhost:8080` and complete setup.
 
 ---
 
-### 2. Create Required Credentials
+### 🔹 2. Create Required Credentials
 
-#### 2.1 GitHub Credentials
-- Go to `Manage Jenkins > Credentials > System > Global Credentials > Add Credentials`.
-- Add your GitHub credentials (username/password or SSH key).
+#### 🔑 GitHub Credentials
+- Navigate to **Manage Jenkins > Credentials > System > Global Credentials > Add Credentials**.
+- Add GitHub credentials (Username/Password or SSH Key).
 
-#### 2.2 Docker Hub Credentials
-- Go to `Manage Jenkins > Credentials > System > Global Credentials > Add Credentials`.
-- Add your Docker Hub username and password.
+#### 🔑 Docker Hub Credentials
+- Navigate to **Manage Jenkins > Credentials > System > Global Credentials > Add Credentials**.
+- Add Docker Hub **Username and Password**.
 
-#### 2.3 Kubernetes Credentials Using a Service Account Token
-##### Step 1: Create a Service Account in Kubernetes
+#### 🔑 Kubernetes Service Account Token
+##### Step 1: Create Service Account
 ```bash
 kubectl create serviceaccount jenkins-sa
 ```
 
-##### Step 2: Bind the Service Account to a Role with Necessary Permissions
+##### Step 2: Bind Service Account to Cluster Role
 ```bash
 kubectl create clusterrolebinding jenkins-sa-binding \
   --clusterrole=cluster-admin \
   --serviceaccount=default:jenkins-sa
 ```
 
-##### Step 3: Retrieve the Token for the Service Account
+##### Step 3: Retrieve Service Account Token
 ```bash
 kubectl get secret $(kubectl get serviceaccount jenkins-sa -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 --decode
 ```
-Save this token for use in Jenkins.
+Save this token.
 
-##### Step 4: Add Service Account Token to Jenkins
-- Go to `Jenkins Dashboard > Manage Jenkins > Credentials > System > Global Credentials > Add Credentials`.
-- Configure the credentials:
-  - **Kind**: Secret text
-  - **Secret**: Paste the service account token.
-  - **ID**: Provide a unique ID (e.g., `k8s-service-account-token`).
-  - **Description**: Add a description (e.g., "Service account token for Kubernetes cluster access").
-- Click **OK** to save.
+##### Step 4: Add Token to Jenkins
+- Navigate to **Manage Jenkins > Credentials > System > Global Credentials > Add Credentials**.
+- **Kind**: Secret text
+- **Secret**: Paste the token
+- **ID**: `k8s-service-account-token`
+- **Description**: Kubernetes cluster access token
 
-![Image](./images/credentials.jpg)
+📷 ![Image](./images/credentials.jpg)
 
 ---
 
-### 3. Create a Pipeline Project
+### 🔹 3. Create a Pipeline Project
 
-1. Go to `Jenkins Dashboard > New Item`.
-2. Enter a name for the pipeline (e.g., **Jenkins-Pipeline**) and select **Pipeline**.
-3. Configure the pipeline:
-   - **Definition**: Pipeline script from SCM.
-   - **SCM**: Git.
-   - **Repository URL**: `https://github.com/abdelhamed-4A/NTI-IVolve-Training.git`.
-   - **Branch**: `main`.
-   - **Script Path**: `Jenkins/Task-3/Jenkinsfile`.
-   - **Credentials**: Select your GitHub credentials.
+1. Navigate to **Jenkins Dashboard > New Item**.
+2. Enter pipeline name (**Jenkins-Pipeline**), select **Pipeline**.
+3. Configure:
+   - **Definition**: Pipeline script from SCM
+   - **SCM**: Git
+   - **Repository URL**: `https://github.com/abdelhamed-4A/NTI-IVolve-Training.git`
+   - **Branch**: `main`
+   - **Script Path**: `Jenkins/Task-3/Jenkinsfile`
+   - **Credentials**: Select GitHub credentials
 
-![Image](./images/Pipeline.jpg)
-
----
-
-## Pipeline Stages
-The Jenkins pipeline consists of the following stages:
-
-1. **Clone GitHub Repository**:
-   - Clones the repository containing the application code and Kubernetes files.
-
-2. **Build Docker Image**:
-   - Builds a Docker image from the Dockerfile.
-
-3. **Push Docker Image**:
-   - Pushes the Docker image to Docker Hub.
-
-4. **Delete Local Docker Image**:
-   - Removes the Docker image from the local machine to free up space.
-
-5. **Update Kubernetes Deployment**:
-   - Updates the `deployment.yaml` file with the new Docker image version.
-
-6. **Deploy to Kubernetes**:
-   - Applies the updated `deployment.yaml` to the Kubernetes cluster.
-
-![Image](./images/Build-jenkins-pipeline.jpg)
-![Image](./images/my-image.jpg)
+📷 ![Image](./images/Pipeline.jpg)
 
 ---
 
-## How to Run
+## 🔄 Pipeline Stages
 
-### Trigger the Pipeline
-- Manually trigger the pipeline from the Jenkins dashboard.
-- Alternatively, configure a **GitHub webhook** to trigger the pipeline automatically on code changes.
+1. **Clone GitHub Repository** 📥
+   - Retrieves source code and Kubernetes manifests.
 
-### Verify Deployment
-Check the Kubernetes cluster to ensure the application is deployed:
+2. **Build Docker Image** 🏗️
+   - Uses Dockerfile to build the application image.
+
+3. **Push Docker Image** 🚀
+   - Uploads the image to Docker Hub.
+
+4. **Delete Local Docker Image** 🧹
+   - Frees space by removing the local Docker image.
+
+5. **Update Kubernetes Deployment** 📝
+   - Modifies `deployment.yaml` with the new Docker image version.
+
+6. **Deploy to Kubernetes** 🚢
+   - Applies `deployment.yaml` to the Kubernetes cluster.
+
+📷 ![Image](./images/Build-jenkins-pipeline.jpg)
+📷 ![Image](./images/my-image.jpg)
+
+---
+
+## ▶️ How to Run
+
+### 🔹 Manually Trigger Pipeline
+- Start the pipeline from **Jenkins Dashboard**.
+
+### 🔹 Automate with GitHub Webhook
+- Configure webhook to trigger Jenkins on repository updates.
+
+### 🔹 Verify Deployment
+Check Kubernetes deployment:
 ```bash
 kubectl get deployments
 kubectl get pods
 ```
 
-![Image](./images/deployments.jpg)
+📷 ![Image](./images/deployments.jpg)
 
 ---
 
-## Troubleshooting
+## ⚠️ Troubleshooting
 
-### Common Issues
+### ❌ Docker Build Fails
+- Ensure `Dockerfile` and `static_website/` exist in the correct location.
 
-#### Docker Build Fails
-- Ensure the `Dockerfile` and `static_website/` directory exist in the correct location.
+### ❌ Docker Push Fails
+- Verify Docker Hub credentials and correct image naming.
 
-#### Docker Push Fails
-- Verify Docker Hub credentials and ensure the image name includes your Docker Hub username.
+### ❌ Kubernetes Deployment Fails
+- Check if `deployment.yaml` exists and is correctly formatted.
+- Ensure the Kubernetes cluster is running.
 
-#### Kubernetes Deployment Fails
-- Ensure the `deployment.yaml` file exists and is correctly formatted.
-- Verify the Kubernetes cluster is running and accessible.
+### ❌ kubectl Connection Refused
+- Verify Kubernetes cluster status and correct `kubeconfig` setup.
 
-#### kubectl Connection Refused
-- Ensure the Kubernetes cluster is running and the `kubeconfig` file is correct.
+---
+
+✅ **Now your Jenkins pipeline is ready to automate deployments!** 🎯
 

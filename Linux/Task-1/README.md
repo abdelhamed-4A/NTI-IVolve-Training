@@ -1,61 +1,77 @@
-# User and Group Management
+# 👥 User & Group Management with Sudo Privileges 🚀
 
-## Objective
-Create a new group named `ivolve` and assign a new user to this group with a secure password. Configure the user’s permissions to install Nginx with elevated privileges using `sudo`, without requiring a password.
+## 🎯 Objective
+Create a new **group & user**, assign appropriate **permissions**, and configure **sudo** access to allow Nginx installation **without a password**.
 
 ---
 
-## Steps to Complete the Task
+## 🛠 Steps to Complete the Task
 
-### 1. Create a New Group
+### 1️⃣ Create a New Group 👥
 ```bash
 sudo groupadd ivolve
 ```
+📌 **Creates a group named `ivolve`.**
 
-### 2. Create a New User and Assign to the Group
+---
+
+### 2️⃣ Create a New User & Assign to the Group 👤
 ```bash
 sudo useradd -m -G ivolve -s /bin/bash ivolveuser
 ```
+📌 **Creates `ivolveuser` and adds it to the `ivolve` group.**
 
-### 3. Set a Secure Password for the User
+---
+
+### 3️⃣ Set a Secure Password 🔐
 ```bash
 sudo passwd ivolveuser
 ```
-Enter a strong password when prompted.
+📌 **Enter a strong password when prompted.**
 
-### 4. Grant sudo Privileges to the User
+---
+
+### 4️⃣ Grant sudo Privileges 🛡️
 Edit the sudoers file:
 ```bash
 sudo visudo
 ```
-Add this line at the end:
+✅ **Add this line at the end:**
 ```bash
 ivolveuser ALL=(ALL) NOPASSWD: /usr/bin/yum install nginx
 ```
+📌 **Allows `ivolveuser` to install Nginx without a password.**
 
-### 5. Verification Steps
+---
 
-#### Switch to the New User
+## 🔍 Verification Steps
+
+### 5️⃣ Switch to the New User 🏁
 ```bash
 su - ivolveuser
 ```
+📌 **Logs in as `ivolveuser`.**
 
-#### Install Nginx Using sudo
+### 6️⃣ Install Nginx Using sudo 🛠️
 ```bash
 sudo yum install nginx
 ```
-This should proceed without a password prompt.
+📌 **Nginx should install without a password prompt.**
 
-#### Check if Nginx is Installed
+### 7️⃣ Check If Nginx is Installed ✅
 ```bash
 nginx -v
 ```
+📌 **Confirms Nginx installation.**
 
-#### Test Restricted sudo Privileges
-Try installing another package, like `httpd`, which should not be allowed:
+### 8️⃣ Test Restricted sudo Privileges 🚫
+Try installing another package (**should not be allowed**):
 ```bash
 sudo yum install httpd
 ```
-It should prompt the user to enter a password.
+📌 **The system should prompt for a password.**
 
-This allows the user to install Nginx without requiring a password but prevents the installation of other packages.
+---
+
+🎉 **Your user & group are now correctly configured with restricted sudo privileges!** 🚀
+

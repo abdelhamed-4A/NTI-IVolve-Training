@@ -1,33 +1,41 @@
-# Remote Backend and Lifecycle Rules
+# 🌍 Remote Backend & Lifecycle Rules with Terraform 🚀
 
-## Objective
-Implement the provided architecture diagram using Terraform, ensuring:
-1. Install NGINX using user data.
-2. Store state file in a remote backend (S3).
-3. A `create_before_destroy` lifecycle rule is applied to an EC2 instance and its behavior is verified.
+## 🎯 Objective
+1️⃣ **Install NGINX** using user data on an EC2 instance.  
+2️⃣ **Store Terraform state file** remotely in an **S3 backend**.  
+3️⃣ **Apply `create_before_destroy` lifecycle rule** to an EC2 instance and verify behavior.  
 
-   ![image](./images/IMG-20250306-WA0007.jpg)
+📌 ![image](./images/IMG-20250306-WA0007.jpg)
 
-## Features
-- **VPC Architecture**:
-  - Custom VPC with a public subnet.
-  - Internet Gateway (IGW) for public access.
-  - Route tables with public routing.
-- **Compute Resources**:
-  - EC2 instance with Amazon Linux 2 AMI.
-  - Auto-installed NGINX web server via user data.
-  - SSH key pair authentication.
-- **Security**:
-  - Security Group with restricted SSH/HTTP access.
-  - Encrypted S3 state storage.
-- **Monitoring & Alerting**:
-  - CloudWatch CPU utilization monitoring.
-  - SNS email notifications for thresholds.
-- **State Management**:
-  - Remote state storage in S3.
-  - State locking via DynamoDB.
+---
 
-## Project Structure
+## ⚙️ Features
+
+✅ **VPC Architecture**:
+- Custom **VPC** with a **public subnet**.
+- **Internet Gateway (IGW)** for public access.
+- **Route tables** with public routing.
+
+✅ **Compute Resources**:
+- **EC2 instance** with **Amazon Linux 2 AMI**.
+- **Auto-installation of NGINX** via **user data**.
+- **SSH key pair authentication**.
+
+✅ **Security**:
+- **Security Groups** with restricted **SSH/HTTP access**.
+- **Encrypted S3 state storage**.
+
+✅ **Monitoring & Alerting**:
+- **CloudWatch** CPU utilization monitoring.
+- **SNS email notifications** for threshold alerts.
+
+✅ **State Management**:
+- **Remote state storage in S3**.
+- **State locking via DynamoDB**.
+
+---
+
+## 📁 Project Structure
 ```
 terraform-project/
 ├── backend.tf            # S3 backend & DynamoDB locking
@@ -41,31 +49,35 @@ terraform-project/
 └── terraform.tfvars      # Variable values
 ```
 
-## Steps
+---
 
-### 1. Prerequisites
+## 🛠️ Steps to Deploy
 
-1. **Set Up Remote Backend**:
-   - Define an S3 bucket for storing the Terraform state file.
+### 1️⃣ Prerequisites
 
-   ![image](./images/ivolve-s3-buchet.jpg)
+✅ **Set Up Remote Backend**:
+- **Define an S3 bucket** for storing the Terraform state file.
 
-2. **Configure Remote Backend** (backend.tf):
-   ```hcl
-   terraform {
-     backend "s3" {
-       bucket         = "ivolve-s3-bucket"
-       key            = "terraform.tfstate"
-       region         = "us-east-1"
-       encrypt        = true
-       dynamodb_table = "terraform-lock"
-     }
-   }
-   ```
+📌 ![image](./images/ivolve-s3-buchet.jpg)
 
-### 2. Implement Architecture
+✅ **Configure Remote Backend** (`backend.tf`):
+```hcl
+terraform {
+  backend "s3" {
+    bucket         = "ivolve-s3-bucket"
+    key            = "terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "terraform-lock"
+  }
+}
+```
 
-#### Network Resources (network.tf):
+---
+
+### 2️⃣ Implement the Architecture
+
+#### 🌐 Network Resources (`network.tf`):
 ```hcl
 resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr_block
@@ -73,14 +85,16 @@ resource "aws_vpc" "vpc" {
     Name = "VPC"
   }
 }
-
+```
+```hcl
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
   tags = {
     Name = "IGW"
   }
 }
-
+```
+```hcl
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = var.public_subnet_cidr_block
@@ -92,7 +106,7 @@ resource "aws_subnet" "public_subnet" {
 }
 ```
 
-#### Compute Resources (compute.tf):
+#### 🖥️ Compute Resources (`compute.tf`):
 ```hcl
 resource "aws_instance" "ec2" {
   ami                    = data.aws_ami.amazon_linux.id
@@ -115,21 +129,22 @@ resource "aws_instance" "ec2" {
   }
 }
 ```
+📌 ![image](./images/Instances.jpg)
 
-   ![image](./images/Instances.jpg)
-
-#### Monitoring and Alerting (monitoring.tf):
+#### 📊 Monitoring & Alerting (`monitoring.tf`):
 ```hcl
 resource "aws_sns_topic" "cpu_alert_topic" {
   name = "cpu_alert_topic"
 }
-
+```
+```hcl
 resource "aws_sns_topic_subscription" "email_subscription" {
   topic_arn = aws_sns_topic.cpu_alert_topic.arn
   protocol  = "email"
   endpoint  = var.my_email
 }
-
+```
+```hcl
 resource "aws_cloudwatch_metric_alarm" "cpu_high_alarm" {
   alarm_name                = "HighCPUUsage"
   comparison_operator       = "GreaterThanThreshold"
@@ -148,24 +163,26 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high_alarm" {
   }
 }
 ```
-   ![image](./images/Alarms.jpg)
-   ![image](./images/cpu_alert_topic.jpg)
-   ![image](./images/cpu_alert.jpg)
+📌 ![image](./images/Alarms.jpg)
+📌 ![image](./images/cpu_alert_topic.jpg)
+📌 ![image](./images/cpu_alert.jpg)
 
-### 3. Initialize and Apply Configuration
+---
 
-- Initialize Terraform:
+### 3️⃣ Deploy with Terraform 🚀
+
+✅ **Initialize Terraform**:
 ```bash
 terraform init
 ```
 
-- Review Execution Plan:
+✅ **Review Execution Plan**:
 ```bash
 terraform plan
 ```
 
-- Apply Configuration:
+✅ **Apply Configuration**:
 ```bash
-terraform apply
+terraform apply -auto-approve
 ```
 

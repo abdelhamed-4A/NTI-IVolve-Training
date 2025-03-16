@@ -1,70 +1,76 @@
-# Ansible Playbooks for install NGINX
+# 🚀 Ansible Playbook for Installing NGINX
 
-## Objective
-Write an Ansible playbook to automate the configuration of a web server. The playbook will install and configure Nginx on a web server, ensuring the service is running and enabled to start on boot.
+## 🎯 Objective
+Automate the configuration of a **web server** using **Ansible**. This playbook will:
+✅ **Install & configure Nginx** 🛠️  
+✅ **Ensure the service is running & enabled on boot** ⚙️  
+✅ **Deploy a custom web page** 🌐  
+✅ **Allow HTTP traffic via firewall** 🔥  
 
 ---
 
-## Steps to Complete the Task
+## 🏗 Steps to Complete the Task
 
-#### 1. **Create and add your hosts in the Inventory File**
-Create the  Ansible inventory file and add hosts
-   ```bash
-   sudo mkdir ansible
-   cd ansible
-   mkdir inventory
-   ```
-Add the IP address or hostname of the web server(s) under a webservers group:
- ```bash
-   vim inventory
-   ```
-```plain-text
+### 1️⃣ Create & Configure the Inventory File 📋
+✅ **Create a working directory for Ansible:**
+```bash
+mkdir -p ~/ansible/inventory && cd ~/ansible
+```
+✅ **Create the inventory file:**
+```bash
+vim inventory
+```
+✅ **Add target servers under `[hosts]`:**
+```ini
 [hosts]
 192.168.19.132
 192.168.19.133
 ```
-Save and close the file.
+📌 **Save and close the file.**
 
-### 2. **Prepare ansible.cfg File**
+---
 
-
-Create the  playbook.yaml
-   ```bash
-   vim ansibel.cfg
+### 2️⃣ Configure `ansible.cfg` ⚙️
+✅ **Create the Ansible configuration file:**
+```bash
+vim ansible.cfg
 ```
-Write the Playbook
-```plain-text
+✅ **Add the following content:**
+```ini
 [defaults]
 inventory = ./inventory
 remote_user = ansibleusr
 ask_pass = false
+
 [privilege_escalation]
 become = true
 become_method = sudo
 become_user = root
 become_ask_pass = false
-
 ```
+📌 **This ensures proper privilege escalation and inventory configuration.**
 
-#### 3. **Create playbook File**
-Create the  playbook.yaml
-   ```bash
-   vim playbook.yaml
+---
+
+### 3️⃣ Create the Ansible Playbook 📜
+✅ **Create a playbook file:**
+```bash
+vim playbook.yaml
 ```
-Write the Playbook
+✅ **Add the following Ansible playbook:**
 ```yaml
 ---
 - name: Configure Nginx
   hosts: hosts        
   become: yes                  
   tasks:
-    - name: installe nginx
+    - name: Install Nginx
       apt:
         name: nginx
         state: present
         update_cache: yes
 
-    - name: Start and enable Nginx service
+    - name: Start & enable Nginx service
       service:
         name: nginx
         state: started
@@ -85,43 +91,36 @@ Write the Playbook
       ufw:
         state: enabled
 ```
-Here's a breakdown of what each task does:
+📌 **Breakdown of tasks:**
+- ✅ **Install Nginx** 🛠️
+- ✅ **Ensure Nginx is running & enabled on boot** 🔄
+- ✅ **Deploy a simple HTML page** 📝
+- ✅ **Open HTTP (port 80) on the firewall** 🔥
 
-Install Nginx: This task installs Nginx on the target machine.
-Ensure Nginx is running and enabled: This ensures that the Nginx service is running and will start on boot.
-Create a custom index.html page: This task creates a simple HTML file that will be served by the Nginx web server.
+---
 
-#### 4. **run the playbook**
-Create the  playbook.yaml
-   ```bash
-   ansible-playbook playbook.yaml -i inventory
+### 4️⃣ Run the Playbook 🚀
+✅ **Execute the playbook:**
+```bash
+ansible-playbook playbook.yaml -i inventory
 ```
+📌 **This will install and configure Nginx on all listed hosts.**
 
-Verify the Configuration
-Once the playbook has run successfully, you can verify the configuration:
+---
 
-a. Check the Web Server
-Open a web browser and navigate to the IP address or hostname of your web server. You should see page with the message "Hello, Nginx from Ansible"
+### 5️⃣ Verify the Configuration 🔍
 
-b. Verify Nginx Service
-On the server, check if Nginx is running and enabled
+✅ **Check the web server:**
+- Open a browser & navigate to the **server’s IP address**.
+- You should see **“Hello, Nginx from Ansible”** displayed.
+
+✅ **Verify Nginx service status:**
 ```bash
 sudo systemctl status nginx
 ```
+📌 **Ensure that Nginx is running & enabled.**
 
+---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+🎉 **Your Nginx server is now fully configured using Ansible!** 🚀
 

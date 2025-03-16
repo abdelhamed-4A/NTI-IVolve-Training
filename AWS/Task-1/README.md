@@ -1,111 +1,132 @@
-# AWS Security Setup
+# 🔒 AWS Security Setup 🚀
 
-## Objective
+## 🎯 Objective
 Set up an AWS account, configure billing alerts and budgets, manage IAM groups and users, and verify access restrictions.
 
 ---
 
-## Steps
+## 🛠 Steps
 
-### 1. Create an AWS Account
+### 1️⃣ Create an AWS Account 🏗
 - Sign up at [AWS Sign-Up](https://aws.amazon.com/signup/).
 
 ---
 
-### 2. Set Up AWS Budgets
-1. **Navigate to AWS Budgets:**  
-   - AWS Management Console → Billing Dashboard → Budgets.
+### 2️⃣ Set Up AWS Budgets 💰
 
-2. **Create a Budget:**  
+✅ **Navigate to AWS Budgets:**  
+   - AWS Console → **Billing Dashboard** → **Budgets**.
+
+✅ **Create a Budget:**  
    - **Type:** Cost Budget  
    - **Name:** `budget-account1`  
    - **Period:** Monthly  
-   - **Amount:** Set threshold (e.g., `$10`).  
+   - **Amount:** Set threshold (e.g., `$10`).
 
-3. **Configure Notifications:**  
+✅ **Configure Notifications:**  
    - **Thresholds:**  
-     - 80%: Send notification.  
-     - 100%: Send critical notification.  
+     - 🚨 **80%**: Send notification.  
+     - 🔴 **100%**: Send critical alert.
    - **Channels:**  
-     - Add email or SNS topic.  
+     - Add **email** or **SNS topic**.
 
-4. **Review and Create:**  
+✅ **Review and Create:**  
    - Verify settings and click **Create Budget**.
+
+📌 ![image](./images/budget.jpg)
 
 ---
 
-### 3. Set a Billing Alarm
-1. **Navigate to CloudWatch:**  
-   - AWS Management Console → CloudWatch.
+### 3️⃣ Set a Billing Alarm ⏰
 
-2. **Create Billing Alarm:**  
+✅ **Navigate to CloudWatch:**  
+   - AWS Console → **CloudWatch**.
+
+✅ **Create Billing Alarm:**  
    - **Steps:**  
      - Select **Alarms** → **Create Alarm**.  
      - Choose **Billing** → **Total Estimated Charges**.  
      - Set a threshold (e.g., `$10`).  
-     - Set up email notifications.
+     - Set up **email notifications**.
+
+📌 ![image](./images/billing-alarm.jpg)
 
 ---
 
-### 4. Create IAM Groups
-1. **Navigate to IAM Dashboard:**  
-   - AWS Console → IAM → Groups.
+### 4️⃣ Create IAM Groups 👥
 
-2. **Create Groups:**  
-   - `admin-group`: Attach **AdministratorAccess** policy.  
-   - `developer-group`: Attach **AmazonEC2ReadOnlyAccess** policy.  
+✅ **Navigate to IAM Dashboard:**  
+   - AWS Console → **IAM** → **Groups**.
 
----
+✅ **Create Groups:**  
+   - 🛡 **admin-group**: Attach **AdministratorAccess** policy.  
+   - 🛠 **developer-group**: Attach **AmazonEC2ReadOnlyAccess** policy.
 
-### 5. Create IAM Users
-1. **Create `admin-1` User (Console Access Only):**  
-   - Access Type: Console access.  
-   - Add to Group: `admin-group`.  
-   - Enable MFA.
-
-2. **Create `admin-2-prog` User (CLI Access Only):**  
-   - Access Type: Programmatic access.  
-   - Add to Group: `admin-group`.
-
-3. **Create `dev-user` (Console & CLI Access):**  
-   - Access Type: Both console and programmatic access.  
-   - Add to Group: `developer-group`.
+📌 ![image](./images/iam-groups.jpg)
 
 ---
 
-### 6. Configure AWS CLI for `admin-2-prog` and `dev-user`
-1. **Install AWS CLI:** [AWS CLI Installation](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).  
+### 5️⃣ Create IAM Users 🔑
 
-2. **Configure AWS CLI:**  
-   ```bash
-   aws configure
-   ```
+✅ **Create `admin-1` User (Console Access Only)**
+   - **Access Type**: Console access.
+   - **Group**: `admin-group`.
+   - **Enable MFA** ✅.
+
+✅ **Create `admin-2-prog` User (CLI Access Only)**
+   - **Access Type**: Programmatic access.
+   - **Group**: `admin-group`.
+
+✅ **Create `dev-user` (Console & CLI Access)**
+   - **Access Type**: Both console & programmatic.
+   - **Group**: `developer-group`.
+
+📌 ![image](./images/iam-users.jpg)
 
 ---
 
-### 7. List Users and Groups Using AWS CLI
-1. **Run Command:**  
-   ```bash
-   aws iam list-users
-   ```
+### 6️⃣ Configure AWS CLI for `admin-2-prog` & `dev-user` 💻
+
+✅ **Install AWS CLI:** [AWS CLI Installation](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).  
+
+✅ **Configure AWS CLI:**
+```bash
+aws configure
+```
+
+📌 ![image](./images/aws-cli-config.jpg)
 
 ---
 
-### 8. Verify Access Restrictions for `dev-user`
+### 7️⃣ List Users & Groups Using AWS CLI 📜
 
-#### **Access EC2 Console**
-1. **Log in as `dev-user`**  
+✅ **Run Command:**
+```bash
+aws iam list-users
+```
+📌 ![image](./images/aws-list-users.jpg)
+
+---
+
+### 8️⃣ Verify Access Restrictions for `dev-user` 🚫
+
+#### 🔍 **Access EC2 Console**
+✅ **Log in as `dev-user`**  
    - Navigate to **EC2 Dashboard**.
+✅ **Verify Read-Only Access:**  
+   - Ensure `dev-user` can **view** instances but **cannot modify** them.
 
-2. **Verify Read-Only Access:**  
-   - Ensure `dev-user` can view instances but cannot modify them.
+📌 ![image](./images/ec2-readonly.jpg)
 
-#### **Attempt to Access S3**
-1. **Log in as `dev-user`**  
+#### 🔐 **Attempt to Access S3**
+✅ **Log in as `dev-user`**  
    - Navigate to **S3 Dashboard**.
+✅ **Verify Access Denied:**  
+   - `dev-user` should see an **Access Denied** message when trying to access S3.
 
-2. **Verify Access Denied:**  
-   - `dev-user` should see an **Access Denied** message when attempting to access S3 resources.
+📌 ![image](./images/s3-access-denied.jpg)
 
 ---
+
+🎉 **AWS Security Setup is Complete!** 🚀
 

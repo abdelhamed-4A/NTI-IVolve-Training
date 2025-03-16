@@ -1,59 +1,82 @@
-# Disk Management and Logical Volume Setup
+# 💾 Disk Management & Logical Volume Setup 🚀
 
-## Objective
-Attach a 15GB disk to your VM and create four partitions: 4GB, 2GB, 6GB, and 3GB. Configure:
-- 4GB partition as a file system
-- 2GB partition as swap
-- 6GB partition as a Volume Group (VG) with a Logical Volume (LV)
-- Extend the LV by adding the last 3GB partition
+## 🎯 Objective
+Attach a **15GB disk** to your VM and configure partitions as follows:
+✅ **4GB** → Formatted as a file system 📂  
+✅ **2GB** → Configured as a **swap partition** 🔄  
+✅ **6GB** → Created as a **Volume Group (VG) & Logical Volume (LV)** 🏗️  
+✅ **Extend the LV** by adding the **last 3GB** partition ➕  
 
-## Steps to Complete the Task
+---
 
-### 1. Identify the New Disk
+## 🛠 Steps to Complete the Task
+
+### 1️⃣ Identify the New Disk 🧐
 ```bash
 lsblk
 ```
+📌 **Lists available disks and partitions.**
 
-### 2. Create Partitions
+---
+
+### 2️⃣ Create Partitions 🏗️
 ```bash
 sudo fdisk /dev/sdb
 ```
-Use the following sizes:
-- 4GB (primary)
-- 2GB (primary, swap)
-- 6GB (primary, LVM)
-- 3GB (primary, LVM extension)
+📌 **Follow these sizes:**
+- ✅ **4GB** → **Primary Partition** (File System)
+- ✅ **2GB** → **Primary Partition** (Swap)
+- ✅ **6GB** → **Primary Partition** (LVM)
+- ✅ **3GB** → **Primary Partition** (LVM Extension)
 
-### 3. Format the 4GB Partition
+---
+
+### 3️⃣ Format the 4GB Partition 📂
 ```bash
 sudo mkfs.ext4 /dev/sdb1
 ```
+📌 **Formats `/dev/sdb1` as an EXT4 file system.**
 
-### 4. Set Up the 2GB Swap Partition
+---
+
+### 4️⃣ Set Up the 2GB Swap Partition 🔄
 ```bash
 sudo mkswap /dev/sdb2
 sudo swapon /dev/sdb2
 ```
+📌 **Configures and activates swap memory.**
 
-### 5. Create a Volume Group and Logical Volume
+---
+
+### 5️⃣ Create a Volume Group & Logical Volume 🏗️
 ```bash
 sudo vgcreate my_vg /dev/sdb3
 sudo lvcreate -L 6G -n my_lv my_vg
 sudo mkfs.ext4 /dev/my_vg/my_lv
 ```
+📌 **Creates an LVM structure with a 6GB logical volume.**
 
-### 6. Extend the Logical Volume
+---
+
+### 6️⃣ Extend the Logical Volume ➕
 ```bash
 sudo vgextend my_vg /dev/sdb4
 sudo lvextend -L +3G /dev/my_vg/my_lv
 sudo resize2fs /dev/my_vg/my_lv
 ```
+📌 **Adds the 3GB partition to the existing LV and resizes the file system.**
 
-### 7. Verify Configuration
+---
+
+### 7️⃣ Verify Configuration ✅
 ```bash
 lsblk
 sudo mount /dev/sdb1 /mnt
 sudo mount /dev/my_vg/my_lv /mnt/lvm
 ```
-This ensures that the partitions and logical volume are properly set up.
+📌 **Confirms partitions and logical volume setup.**
+
+---
+
+🎉 **Your disk and logical volume setup is now complete!** 🚀
 

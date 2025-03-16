@@ -1,5 +1,39 @@
-![IVolve Training Logo](./Logo/NTI-Ivolve.png) 
+![IVolve Training Logo](./Logo/NTI-Ivolve.png)  
+![IVolve Training](https://github.com/OmarElshrief/IVolve-Intern/blob/main/ivolve.png)  
 
-# IVolve Training Journey
+# 🚀 IVolve Training Journey
 
-This repository documents the tasks and projects I completed during my IVolve Training program, showcasing my progress and skills in various DevOps technologies and practices.
+## 📌 Overview
+Welcome to the **IVolve Technologies Lab Repository** 🎯  
+This repository contains **hands-on labs and training** provided by **IVolve Technologies**, covering a **comprehensive curriculum** in:
+- 🖥️ **Red Hat Linux Administration**
+- ⚙️ **Ansible**
+- ☁️ **AWS**
+- 🌍 **Terraform**
+- 🏗️ **Jenkins**
+- 🏢 **OpenShift**
+
+📌 **Explore the repository to follow along with real-life training exercises**
+
+---
+
+## 📂 Contents
+All labs are documented here, showcasing **practical skills and real-world scenarios.** 🔥
+
+### 🔹 **Technologies Covered:**
+- 🔴 [**Red Hat Linux Administration**](https://github.com/abdelhamed-4A/NTI-IVolve-Training/tree/main/Linux)
+- 🤖 [**Ansible**](https://github.com/abdelhamed-4A/NTI-IVolve-Training/tree/main/Ansible)
+- ☁️ [**AWS**](https://github.com/abdelhamed-4A/NTI-IVolve-Training/tree/main/AWS)
+- 🌍 [**Terraform**](https://github.com/abdelhamed-4A/NTI-IVolve-Training/tree/main/Terraform)
+- 🏗️ [**Jenkins**](https://github.com/abdelhamed-4A/NTI-IVolve-Training/tree/main/Jenkins)
+
+📌 **Each section contains structured labs, guides, and exercises** 🛠️
+
+---
+
+## 🙌 Acknowledgments
+🎉 **A huge thank you to:**  
+✅ **NTI** for this incredible learning opportunity.  
+✅ **IVolve Technologies** for providing valuable hands-on experience.  
+
+🚀 **Let's keep learning and evolving together** 🔥

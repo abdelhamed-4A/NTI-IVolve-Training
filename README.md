@@ -1,5 +1,4 @@
-![IVolve Training Logo](./Logo/NTI-Ivolve.png)  
-![IVolve Training](https://github.com/OmarElshrief/IVolve-Intern/blob/main/ivolve.png)  
+![IVolve Training Logo](./Logo/NTI-Ivolve.png)   
 
 # 🚀 IVolve Training Journey
 

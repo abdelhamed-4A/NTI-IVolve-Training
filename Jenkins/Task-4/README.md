@@ -83,4 +83,4 @@ jenkins-shared-library/
 ### 🔹 6. Deploy to Kubernetes 🚀
 - Applies the updated `deployment.yaml` to the Kubernetes cluster.
 
-🖼️ ![Image](./images/jenkins-shared-library-pipeline.jpg)
+🖼️ ![Image](./images/jenkin-pipline.jpg)

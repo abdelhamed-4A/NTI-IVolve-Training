@@ -10,7 +10,7 @@ This repository contains **hands-on labs and training** provided by **IVolve Tec
 - ☁️ **AWS**
 - 🌍 **Terraform**
 - 🏗️ **Jenkins**
-- 🏢 **OpenShift**
+- 🏢 **Kubernetes**
 
 📌 **Explore the repository to follow along with real-life training exercises**
 
@@ -25,6 +25,7 @@ All labs are documented here, showcasing **practical skills and real-world scena
 - ☁️ [**AWS**](https://github.com/abdelhamed-4A/NTI-IVolve-Training/tree/main/AWS)
 - 🌍 [**Terraform**](https://github.com/abdelhamed-4A/NTI-IVolve-Training/tree/main/Terraform)
 - 🏗️ [**Jenkins**](https://github.com/abdelhamed-4A/NTI-IVolve-Training/tree/main/Jenkins)
+- 🏢 [**Kubernetes**](https://github.com/abdelhamed-4A/NTI-IVolve-Training/tree/main/Kubernetes)
 
 📌 **Each section contains structured labs, guides, and exercises** 🛠️
 

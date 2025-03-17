@@ -1,4 +1,4 @@
-# 🛠️ Kubernetes: Updating Applications & Rolling Back Changes
+# 🛠️ Updating Applications & Rolling Back Changes
 
 This guide covers **deploying NGINX**, updating it to **Apache**, checking rollout history, and rolling back to the previous version using **Kubernetes Deployment Strategies**. 🚀
 

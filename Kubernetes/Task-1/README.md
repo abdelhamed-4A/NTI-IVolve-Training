@@ -94,6 +94,7 @@ kubectl port-forward service/nginx-service 9090:80 -n lab-26
 
 4️⃣ **Access NGINX locally:**
 Open your browser and visit `http://localhost:9090`.
+
 ![image](./images/localhost.jpg)
 
 ---
@@ -125,9 +126,11 @@ kubectl rollout status deployment/nginx-deployment -n lab-26
 kubectl get pods -n lab-26 -o wide
 ```
    - The old pods
+
 ![image](./images/old-pods.jpg)
 
    - The new pods after the rollout ( Notice the change in the names )
+
 ![image](./images/new-pods.jpg)
 
 
@@ -136,6 +139,7 @@ kubectl get pods -n lab-26 -o wide
 kubectl describe pod <pod-name> -n lab-26
 ```
    - To verify that the pod is created from the new image
+   
 ![image](./images/describe-pod.jpg)
 
 ---

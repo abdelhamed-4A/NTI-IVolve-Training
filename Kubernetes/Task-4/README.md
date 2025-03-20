@@ -107,6 +107,7 @@ kubectl auth can-i delete pod --as=system:serviceaccount:default:my-svc-acc
 | **Binding Mechanism**   | A Service Account used by a Jenkins pod to access Kubernetes resources.			|	Granting read-only access to pods in a namespace for a specific user.      | Granting admin access to all nodes or global secrets across namespaces. |
 | **Examples**        | Pre-created or dynamically provisioned storage.	|	For pods to request storage via claims.| Simplifies dynamic provisioning of storage. |
 
+---
 🎉 Conclusion
 
 ✅ Successfully created a Service Account.  

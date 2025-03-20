@@ -14,7 +14,7 @@
 
 🔹 **Create a yaml file holds the configuration of the following**:
 
-- `Service Account named `my-svc-acc.yaml`
+- `Service Account` named `my-svc-acc.yaml`
 - `Role` named `pod-reader`
 - `RoleBinding` named `pod-reader-binding`
 
@@ -57,7 +57,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-- 🛠️ Apply the Yaml file
+- 🛠️ Apply the Yaml files
 
 ```bash
 kubectl apply -f service_acc.yaml
@@ -108,8 +108,13 @@ kubectl auth can-i delete pod --as=system:serviceaccount:default:my-svc-acc
 | **Examples**        | Pre-created or dynamically provisioned storage.	|	For pods to request storage via claims.| Simplifies dynamic provisioning of storage. |
 
 🎉 Conclusion
+
 ✅ Successfully created a Service Account.
+
 ✅ Assigned a Role with read-only pod access.
+
 ✅ Bound the Role to the Service Account via RoleBinding.
+
 ✅ Tested the Service Account token and permissions.
+
 ✅ Compared Role vs. ClusterRole with real-world use cases.

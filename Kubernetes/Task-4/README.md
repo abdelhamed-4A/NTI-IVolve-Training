@@ -14,7 +14,7 @@
 
 🔹 **Create a yaml file holds the configuration of the following**:
 
-- `Service Account` named `my-svc-acc.yaml`
+- `Service Account` named `my-svc-acc`
 - `Role` named `pod-reader`
 - `RoleBinding` named `pod-reader-binding`
 
@@ -109,8 +109,8 @@ kubectl auth can-i delete pod --as=system:serviceaccount:default:my-svc-acc
 
 🎉 Conclusion
 
-✅ Successfully created a Service Account. 
-✅ Assigned a Role with read-only pod access. 
-✅ Bound the Role to the Service Account via RoleBinding. 
-✅ Tested the Service Account token and permissions. 
-✅ Compared Role vs. ClusterRole with real-world use cases.
+✅ Successfully created a Service Account.  
+✅ Assigned a Role with read-only pod access.  
+✅ Bound the Role to the Service Account via RoleBinding.  
+✅ Tested the Service Account token and permissions.  
+✅ Compared Role vs. ClusterRole with real-world use cases.  
